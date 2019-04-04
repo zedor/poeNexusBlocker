@@ -10,6 +10,7 @@ var efficiency = 0;
 var pathString = "";
 var stopHighlight = false;
 var toggleHighlight = 0;
+var tated = false;
 const constNodes = 112;
 
 function toggleDebug() {
@@ -146,6 +147,13 @@ function checkRewards ( ) {
 			}
 		}
 	efficiency = efficiency / (constNodes - blockCount -unreachableCount);
+
+	if( showRewards ) pathString+='1'; else pathString+='0';
+	if( tated ) pathString+='1'; else pathString+='0';
+	if( toggleHighlight == 0 ) pathString+='0'; else if( toggleHighlight == 1 ) pathString+='1'; else pathString+=2;
+
+	console.log(pathString);
+
 	toggleRewards();
 	toggleRewards();
 	$("#memCount").removeClass("redText")
@@ -314,7 +322,7 @@ function allowSelection() {
 }
 
 function importPath( path ) {
-	if( path.length != 112 ) return;
+	if( path.length != 112 && path.length != 115 ) return;
 	let count = 0;
 	for( let i = 1; i<=gridDepth*2; i++ )
 		for( let j = 1; j<=gridDepth*2; j++ ) {
@@ -369,6 +377,14 @@ function importPath( path ) {
 	checkRewards();
 
 	stopHighlight = false;
+
+	if( path.length!=115 ) return;
+
+	if( path[112] == '1' ) toggleRewards();
+	if( path[113] == '1' ) rotatePls();
+	if( path[114] == '1' ) toggleHighlight = 1;
+	if( path[115] == '2' ) toggleHighlight = 2;
+	lowLight();
 }
 
 function rotatePls () {
@@ -376,11 +392,13 @@ function rotatePls () {
 		$("#grid").removeClass("scrubRotate");
 		$("#selectMeBruv > .square").removeClass("scrubRotate");
 		hideWalls( true );
+		tated = false;
 	}
 	else {
 		$("#grid").addClass("scrubRotate");
 		$("#selectMeBruv > .square").addClass("scrubRotate");
 		hideWalls( false );
+		tated = true;
 	}
 }
 
@@ -390,23 +408,26 @@ $( document ).ready(function() {
     allowSelection();
     $("#btnToggle").click(function() {
 		toggleRewards();
+		checkRewards();
 	});
 	$("#btnImport").click(function() {
 		importPath( $("input").val() );
 	});
 	$("#btnRotate").click(function() {
 		rotatePls( $("input").val() );
+		checkRewards();
 	});
 	$("#btnPlaceLight").click(function() {
 		toggleHighlight++;
 		if( toggleHighlight > 2 ) toggleHighlight=0;
 		lowLight();
+		checkRewards();
 	});
 
 	var url = window.location.href;
 	var params = url.split('?');
 	if( params[1] !== undefined ) {
-		if( params[1].length == 112 ) {
+		if( params[1].length == 112 || params[1].length == 115 ) {
 			pathString = params[1];
 			importPath( pathString );
 		}
