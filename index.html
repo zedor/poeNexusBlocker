@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GGG doesn't care</title>
+<style>
+
+.square {
+  height: 50px;
+  width: 50px;
+  background: #737373 content-box;
+  border-width: 0.5px;
+  border-color: #000;
+  float:left;
+  color:green;
+  border-style: solid;
+}
+
+.up-corner{
+    width: 0;
+    height: 0;
+    border-bottom: 10px solid blue;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    margin-top: 5px;
+    left: 15px;
+    position: relative;
+}
+
+.down-corner{
+    width: 0;
+    height: 0;
+    border-top: 10px solid blue;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    top: 35px;
+    left: 15px;
+    position: relative;
+}
+
+.down-corner2{
+    width: 0;
+    height: 0;
+    border-top: 10px solid blue;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    top: 20px;
+    left: 15px;
+    position: relative;
+}
+
+.left-corner{
+    width: 0;
+    height: 0;
+    border-right: 10px solid blue;
+    border-top: 10px solid transparent;
+    border-bottom: 10px solid transparent;
+    top: 15px;
+    margin-left: 5px;
+    float:left;
+    position: relative;
+}
+
+.right-corner{
+    width: 0;
+    height: 0;
+    border-left: 10px solid blue;
+    border-top: 10px solid transparent;
+    border-bottom: 10px solid transparent;
+    top: 15px;
+    margin-right: 5px;
+ 	float:right;
+    position: relative;
+}
+
+.squareInvis {
+	height: 50px;
+ 	width: 50px;
+ 	background-color: #f2f2f2;
+ 	border-width: 0.5px;
+ 	border-color: #000;
+ 	float:left;
+ 	border-style: solid;
+}
+
+.selectedBruv {
+	border-color: #F00;
+	border-width: 2px;
+}
+
+.canHoldReward {
+	background-color: #ffff99;
+}
+
+.redText {
+	color: red;
+}
+
+.cantReach {
+	background-color: #ff8533;
+}
+
+.scrubRotate{
+	transform: rotate(-45deg);
+}
+
+</style>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="script.js"></script>
+</head>
+<body>
+
+<div>
+<span id="memCount">Memory Count: 0/40</span> | <span id="blockCount">Nodes Blocked: 0</span> | <span id="cantReachCount">Nodes Unreachable: 0</span> | <span id="efficiencyPath">Avg Path to Node: 0</span> | <button type="button" id="btnToggle">Toggle Reward Colors</button> | <button type="button" id="btnRotate">Rotate</button> | <button type="button" id="btnImport">Import</button> | <input type="text" name="#importText" value="stuff"><br>
+		<div id="selectMeBruv">
+		<div class="square" id="P0" data="0"></div>
+		<div class="square" id="P1" data="1"><div class='left-corner'></div><div class='right-corner'></div></div>
+		<div class="square" id="P2" data="2"><div class='up-corner'></div><div class='down-corner2'></div></div>
+		<div class="square" id="P3" data="3"><div class='left-corner'></div><div class='down-corner'></div></div>
+		<div class="square" id="P4" data="4"><div class='right-corner'></div><div class='down-corner'></div></div>
+		<div class="square" id="P5" data="5"><div class='right-corner'></div><div class='up-corner'></div></div>
+		<div class="square" id="P6" data="6"><div class='left-corner'></div><div class='up-corner'></div></div>
+		<div class="square" id="P7" data="7"><div class='left-corner'></div><div class='right-corner'></div><div class='up-corner'></div></div>
+		<div class="square" id="P8" data="8"><div class='left-corner'></div><div class='up-corner'></div><div class='down-corner2'></div></div>
+		<div class="square" id="P9" data="9"><div class='left-corner'></div><div class='right-corner'></div><div class='down-corner'></div></div>
+		<div class="square" id="PA" data="A"><div class='right-corner'></div><div class='up-corner'></div><div class='down-corner2'></div></div>
+		<div class="square" id="PB" data="B"><div class='left-corner'></div><div class='right-corner'></div><div class='up-corner'></div><div class='down-corner2'></div></div>
+		</div>
+	<div style="clear:both;"></div>
+</br>
+
+<div id="grid">
+	<div class="row" id="row-8">
+		<div class="squareInvis"></div><div class="squareInvis"></div><div class="squareInvis"></div><div class="squareInvis"></div><div class="squareInvis"></div><div class="squareInvis"></div><div class="squareInvis"></div><div class="squareInvis"></div><div class="squareInvis"></div><div class="squareInvis"></div><div class="squareInvis"></div><div class="squareInvis"></div><div class="squareInvis"></div><div class="squareInvis"></div><div class="squareInvis"></div><div class="squareInvis"></div><div class="squareInvis"></div>
+	</div>
+	<div style="clear:both;"></div>
+	<div class="row" id="row-7">
+		<div class="squareInvis"></div><div class="squareInvis"></div><div class="squareInvis"></div><div class="squareInvis"></div><div class="squareInvis"></div><div class="squareInvis"></div><div class="squareInvis"></div><div class="squareInvis"></div><div class="square"></div><div class="squareInvis"></div><div class="squareInvis"></div><div class="squareInvis"></div><div class="squareInvis"></div><div class="squareInvis"></div><div class="squareInvis"></div><div class="squareInvis"></div><div class="squareInvis"></div>
+	</div>
+	<div style="clear:both;"></div>
+	<div class="row" id="row-6">
+		<div class="squareInvis"></div><div class="squareInvis"></div><div class="squareInvis"></div><div class="squareInvis"></div><div class="squareInvis"></div><div class="squareInvis"></div><div class="squareInvis"></div><div class="square"></div><div class="square"></div><div class="square"></div><div class="squareInvis"></div><div class="squareInvis"></div><div class="squareInvis"></div><div class="squareInvis"></div><div class="squareInvis"></div><div class="squareInvis"></div><div class="squareInvis"></div>
+	</div>
+	<div style="clear:both;"></div>
+	<div class="row" id="row-5">
+		<div class="squareInvis"></div><div class="squareInvis"></div><div class="squareInvis"></div><div class="squareInvis"></div><div class="squareInvis"></div><div class="squareInvis"></div><div class="square"></div><div class="square"></div><div class="square"></div><div class="square"></div><div class="square"></div><div class="squareInvis"></div><div class="squareInvis"></div><div class="squareInvis"></div><div class="squareInvis"></div><div class="squareInvis"></div><div class="squareInvis"></div>
+	</div>
+	<div style="clear:both;"></div>
+	<div class="row" id="row-4">
+		<div class="squareInvis"></div><div class="squareInvis"></div><div class="squareInvis"></div><div class="squareInvis"></div><div class="squareInvis"></div><div class="square"></div><div class="square"></div><div class="square"></div><div class="square"></div><div class="square"></div><div class="square"></div><div class="square"></div><div class="squareInvis"></div><div class="squareInvis"></div><div class="squareInvis"></div><div class="squareInvis"></div><div class="squareInvis"></div>
+	</div>
+	<div style="clear:both;"></div>
+	<div class="row" id="row-3">
+		<div class="squareInvis"></div><div class="squareInvis"></div><div class="squareInvis"></div><div class="squareInvis"></div><div class="square"></div><div class="square"></div><div class="square"></div><div class="square"></div><div class="square"></div><div class="square"></div><div class="square"></div><div class="square"></div><div class="square"></div><div class="squareInvis"></div><div class="squareInvis"></div><div class="squareInvis"></div><div class="squareInvis"></div>
+	</div>
+	<div style="clear:both;"></div>
+	<div class="row" id="row-2">
+		<div class="squareInvis"></div><div class="squareInvis"></div><div class="squareInvis"></div><div class="square"></div><div class="square"></div><div class="square"></div><div class="square"></div><div class="square"></div><div class="square"></div><div class="square"></div><div class="square"></div><div class="square"></div><div class="square"></div><div class="square"></div><div class="squareInvis"></div><div class="squareInvis"></div><div class="squareInvis"></div>
+	</div>
+	<div style="clear:both;"></div>
+	<div class="row" id="row-1">
+		<div class="squareInvis"></div><div class="squareInvis"></div><div class="square"></div><div class="square"></div><div class="square"></div><div class="square"></div><div class="square"></div><div class="square"></div><div class="square"></div><div class="square"></div><div class="square"></div><div class="square"></div><div class="square"></div><div class="square"></div><div class="square"></div><div class="squareInvis"></div><div class="squareInvis"></div>
+	</div>
+
+	<div style="clear:both;"></div>
+	<div class="row" id="row0">
+		<div class="squareInvis"></div><div class="square"></div><div class="square"></div><div class="square"></div><div class="square"></div><div class="square"></div><div class="square"></div><div class="square"></div><div class="squareInvis"></div><div class="square"></div><div class="square"></div><div class="square"></div><div class="square"></div><div class="square"></div><div class="square"></div><div class="square"></div><div class="squareInvis"></div>
+	</div>
+
+	<div style="clear:both;"></div>
+	<div class="row" id="row1">
+		<div class="squareInvis"></div><div class="squareInvis"></div><div class="square"></div><div class="square"></div><div class="square"></div><div class="square"></div><div class="square"></div><div class="square"></div><div class="square"></div><div class="square"></div><div class="square"></div><div class="square"></div><div class="square"></div><div class="square"></div><div class="square"></div><div class="squareInvis"></div><div class="squareInvis"></div>
+	</div>
+	<div style="clear:both;"></div>
+	<div class="row" id="row2">
+		<div class="squareInvis"></div><div class="squareInvis"></div><div class="squareInvis"></div><div class="square"></div><div class="square"></div><div class="square"></div><div class="square"></div><div class="square"></div><div class="square"></div><div class="square"></div><div class="square"></div><div class="square"></div><div class="square"></div><div class="square"></div><div class="squareInvis"></div><div class="squareInvis"></div><div class="squareInvis"></div>
+	</div>
+	<div style="clear:both;"></div>
+	<div class="row" id="row3">
+		<div class="squareInvis"></div><div class="squareInvis"></div><div class="squareInvis"></div><div class="squareInvis"></div><div class="square"></div><div class="square"></div><div class="square"></div><div class="square"></div><div class="square"></div><div class="square"></div><div class="square"></div><div class="square"></div><div class="square"></div><div class="squareInvis"></div><div class="squareInvis"></div><div class="squareInvis"></div><div class="squareInvis"></div>
+	</div>
+	<div style="clear:both;"></div>
+	<div class="row" id="row4">
+		<div class="squareInvis"></div><div class="squareInvis"></div><div class="squareInvis"></div><div class="squareInvis"></div><div class="squareInvis"></div><div class="square"></div><div class="square"></div><div class="square"></div><div class="square"></div><div class="square"></div><div class="square"></div><div class="square"></div><div class="squareInvis"></div><div class="squareInvis"></div><div class="squareInvis"></div><div class="squareInvis"></div><div class="squareInvis"></div>
+	</div>
+	<div style="clear:both;"></div>
+	<div class="row" id="row5">
+		<div class="squareInvis"></div><div class="squareInvis"></div><div class="squareInvis"></div><div class="squareInvis"></div><div class="squareInvis"></div><div class="squareInvis"></div><div class="square"></div><div class="square"></div><div class="square"></div><div class="square"></div><div class="square"></div><div class="squareInvis"></div><div class="squareInvis"></div><div class="squareInvis"></div><div class="squareInvis"></div><div class="squareInvis"></div><div class="squareInvis"></div>
+	</div>
+	<div style="clear:both;"></div>
+	<div class="row" id="row6">
+		<div class="squareInvis"></div><div class="squareInvis"></div><div class="squareInvis"></div><div class="squareInvis"></div><div class="squareInvis"></div><div class="squareInvis"></div><div class="squareInvis"></div><div class="square"></div><div class="square"></div><div class="square"></div><div class="squareInvis"></div><div class="squareInvis"></div><div class="squareInvis"></div><div class="squareInvis"></div><div class="squareInvis"></div><div class="squareInvis"></div><div class="squareInvis"></div>
+	</div>
+	<div style="clear:both;"></div>
+	<div class="row" id="row7">
+		<div class="squareInvis"></div><div class="squareInvis"></div><div class="squareInvis"></div><div class="squareInvis"></div><div class="squareInvis"></div><div class="squareInvis"></div><div class="squareInvis"></div><div class="squareInvis"></div><div class="square"></div><div class="squareInvis"></div><div class="squareInvis"></div><div class="squareInvis"></div><div class="squareInvis"></div><div class="squareInvis"></div><div class="squareInvis"></div><div class="squareInvis"></div><div class="squareInvis"></div>
+	</div>
+	<div style="clear:both;"></div>
+	<div class="row" id="row8">
+		<div class="squareInvis"></div><div class="squareInvis"></div><div class="squareInvis"></div><div class="squareInvis"></div><div class="squareInvis"></div><div class="squareInvis"></div><div class="squareInvis"></div><div class="squareInvis"></div><div class="squareInvis"></div><div class="squareInvis"></div><div class="squareInvis"></div><div class="squareInvis"></div><div class="squareInvis"></div><div class="squareInvis"></div><div class="squareInvis"></div><div class="squareInvis"></div><div class="squareInvis"></div>
+	</div>
+</div>
+
+</body>
+</html> 
