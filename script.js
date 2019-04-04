@@ -8,6 +8,8 @@ var blockCount = 0;
 var unreachableCount = 0;
 var efficiency = 0;
 var pathString = "";
+var stopHighlight = false;
+var toggleHighlight = 0;
 const constNodes = 112;
 
 function toggleDebug() {
@@ -53,6 +55,26 @@ function toggleRewards ( ) {
 		if( holdGrid[$(value).data("grid").x][$(value).data("grid").y].canSpawnReward )
 			if( !holdGrid[$(value).data("grid").x][$(value).data("grid").y].canReachReward ) $(value).addClass("cantReach")
 				else $(value).addClass("canHoldReward")
+	} );
+}
+
+function hideWalls ( hideYoWife ) {
+	$.each( $("#grid > .row > .squareInvis"), function( key, value ) {
+		let x = $(value).data("grid").x;
+		let y = $(value).data("grid").y;
+		let notEvenClose = false;
+
+		if( hideYoWife ) $( value ).removeClass("hideYoKids"); else {
+			// check surrounding
+			for( let i = -1; i <= 1; i++ )
+				for( let j = -1; j <= 1; j++ ) {
+					// check bounds
+					if( (x+i)>=0 && (x+i)<=(gridDepth*2) && (y+j)>=0 && (y+j)<=(gridDepth*2) ) {
+						if( !holdGrid[x+i][y+j].isWall ) notEvenClose = true;
+					}
+				}
+			if( !notEvenClose ) $( value ).addClass("hideYoKids");
+		}
 	} );
 }
 
@@ -131,10 +153,16 @@ function checkRewards ( ) {
 	$("#blockCount").text("Nodes Blocked: " + blockCount);
 	$("#memCount").text("Memory Count: "+ memoryCount + "/40");
 	$("#cantReachCount").text("Nodes Unreachable: " + unreachableCount);
-	$("#efficiencyPath").text("Avg Path to Node: " + efficiency);
+	$("#efficiencyPath").text("Avg Path to Node: " + efficiency.toFixed(2));
 	$("input").val(pathString);
 	if( memoryCount > 40 ) $("#memCount").addClass("redText");
 	if( unreachableCount > 18 ) $("#cantReachCount").addClass("redText");
+}
+
+function statusUpdate ( texting ) {
+	$("#statusText").text( texting );
+	$("#statusText").addClass("showMeTheWay");
+	$("#statusText").removeClass("showMeTheWay");
 }
 
 function addWays ( ele ) {
@@ -146,7 +174,6 @@ function addWays ( ele ) {
 		console.log(posX, posY);
 		return;
 	}
-
 	if( ele.data("wall") ) return;
 
 	if( $( selectedBoi ).html() == "" ) {
@@ -156,6 +183,7 @@ function addWays ( ele ) {
 		holdGrid[posX][posY].isEmpty = true;
 		holdGrid[posX][posY].pathVal = $( selectedBoi ).attr("data");
 		checkRewards();
+		lowLight();
 		return;
 	}
 
@@ -182,12 +210,55 @@ function addWays ( ele ) {
 	$( ele ).html( $( selectedBoi ).html() );
 
 	checkRewards();
+	lowLight();
+}
+
+var canItGoHere = function ( ways, x, y ) {
+	if( toggleHighlight == 1 && !holdGrid[x][y].isEmpty ) return;
+
+	if( ways.indexOf('N') !== -1 ) {
+		if( !holdGrid[x][y-1].isEmpty && !holdGrid[x][y-1].canS && !holdGrid[x][y-1].isWall ) return false;
+	} else if( !holdGrid[x][y-1].isEmpty && holdGrid[x][y-1].hasS ) return false;
+
+	if( ways.indexOf('W') !== -1 ) {
+		if( !holdGrid[x-1][y].isEmpty && !holdGrid[x-1][y].canE && !holdGrid[x-1][y].isWall ) return false;
+	} else if( !holdGrid[x-1][y].isEmpty && holdGrid[x-1][y].hasE ) return false;
+
+	if( ways.indexOf('S') !== -1 ) {
+		if( !holdGrid[x][y+1].isEmpty && !holdGrid[x][y+1].canN && !holdGrid[x][y+1].isWall ) return false;
+	} else if( !holdGrid[x][y+1].isEmpty && holdGrid[x][y+1].hasN ) return false;
+
+	if( ways.indexOf('E') !== -1 ) {
+		if( !holdGrid[x+1][y].isEmpty && !holdGrid[x+1][y].canW && !holdGrid[x+1][y].isWall ) return false;
+	} else if( !holdGrid[x+1][y].isEmpty && holdGrid[x+1][y].hasW ) return false;
+
+	return true;
 }
 
 function chooseRoute( ele ) {
 	$(".selectedBruv").removeClass('selectedBruv');
 	$(ele).addClass('selectedBruv');
 	selectedBoi = ele;
+
+	lowLight();
+}
+
+function lowLight() {
+	$("#grid > .row > .square").removeClass("lightMeUp");
+
+	if( toggleHighlight == 0 ) return;
+	if( $(selectedBoi).attr('id') == "P0" ) return;
+
+	let ways = "";
+
+	if( $( selectedBoi ).find("div").hasClass('up-corner') ) ways+= 'N';
+	if( $( selectedBoi ).find("div").hasClass('left-corner') ) ways+= 'W';
+	if( ( $( selectedBoi ).find("div").hasClass('down-corner2') || $( selectedBoi ).find("div").hasClass('down-corner') ) ) ways+= 'S';
+	if( $( selectedBoi ).find("div").hasClass('right-corner') ) ways+='E';
+
+	$.each( $("#grid > .row > .square"), function( key, value ) {
+		if( canItGoHere(ways, $(value).data("grid").x, $(value).data("grid").y) ) $( value ).addClass("lightMeUp");
+	} );
 }
 
 function fillGrid() {
@@ -252,6 +323,8 @@ function importPath( path ) {
 				count++;
 			}
 		}
+
+	stopHighlight = true;
 	$.each( $("#grid > .row > .square"), function( key, value ) {
 		let buff = holdGrid[$(value).data("grid").x][$(value).data("grid").y].pathVal;
 		if( buff == "0" ) {
@@ -292,12 +365,23 @@ function importPath( path ) {
 			addWays( $( value ) );
 		}
 	} );
+
 	checkRewards();
+
+	stopHighlight = false;
 }
 
 function rotatePls () {
-	if ( $("#grid").hasClass("scrubRotate") ) $("#grid").removeClass("scrubRotate");
-	else $("#grid").addClass("scrubRotate");
+	if ( $("#grid").hasClass("scrubRotate") ) {
+		$("#grid").removeClass("scrubRotate");
+		$("#selectMeBruv > .square").removeClass("scrubRotate");
+		hideWalls( true );
+	}
+	else {
+		$("#grid").addClass("scrubRotate");
+		$("#selectMeBruv > .square").addClass("scrubRotate");
+		hideWalls( false );
+	}
 }
 
 $( document ).ready(function() {
@@ -312,6 +396,11 @@ $( document ).ready(function() {
 	});
 	$("#btnRotate").click(function() {
 		rotatePls( $("input").val() );
+	});
+	$("#btnPlaceLight").click(function() {
+		toggleHighlight++;
+		if( toggleHighlight > 2 ) toggleHighlight=0;
+		lowLight();
 	});
 
 	var url = window.location.href;

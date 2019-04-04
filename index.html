@@ -13,13 +13,14 @@
   border-color: #000;
   float:left;
   color:green;
+  pointer-events: auto;
   border-style: solid;
 }
 
 .up-corner{
     width: 0;
     height: 0;
-    border-bottom: 10px solid blue;
+    border-bottom: 10px solid #27badb;
     border-left: 10px solid transparent;
     border-right: 10px solid transparent;
     margin-top: 5px;
@@ -30,7 +31,7 @@
 .down-corner{
     width: 0;
     height: 0;
-    border-top: 10px solid blue;
+    border-top: 10px solid #27badb;
     border-left: 10px solid transparent;
     border-right: 10px solid transparent;
     top: 35px;
@@ -41,7 +42,7 @@
 .down-corner2{
     width: 0;
     height: 0;
-    border-top: 10px solid blue;
+    border-top: 10px solid #27badb;
     border-left: 10px solid transparent;
     border-right: 10px solid transparent;
     top: 20px;
@@ -52,7 +53,7 @@
 .left-corner{
     width: 0;
     height: 0;
-    border-right: 10px solid blue;
+    border-right: 10px solid #27badb;
     border-top: 10px solid transparent;
     border-bottom: 10px solid transparent;
     top: 15px;
@@ -64,13 +65,33 @@
 .right-corner{
     width: 0;
     height: 0;
-    border-left: 10px solid blue;
+    border-left: 10px solid #27badb;
     border-top: 10px solid transparent;
     border-bottom: 10px solid transparent;
     top: 15px;
     margin-right: 5px;
  	float:right;
     position: relative;
+}
+
+.fillMeUp {
+	width: 20px;
+	height: 20px;
+	border-style: none;
+	background-color: #3366ff;
+	margin-left: 15px;
+}
+
+.fillVar1 {
+	margin-top: 15px;
+}
+
+.fillVar2 {
+	margin-top: -10px;
+}
+
+.fillVar3 {
+	margin-top: 5px;
 }
 
 .squareInvis {
@@ -100,8 +121,54 @@
 	background-color: #ff8533;
 }
 
+.square.lightMeUp {
+	background-color: rgba(115, 115, 115, 0.5)
+}
+
+.square.lightMeUp.canHoldReward {
+	background-color: rgba(255, 255, 153, 0.5)
+}
+
+.square.lightMeUp.cantReach {
+	background-color: rgba(255, 133, 51, 0.5)
+}
+
+
 .scrubRotate{
 	transform: rotate(-45deg);
+	z-index: 1;
+}
+
+#grid.scrubRotate {
+	top: -80px;
+	position: relative;
+}
+.square.scrubRotate {
+	margin-left:20px;
+	margin-top:15px;
+}
+
+#grid {
+	width: 918px;
+	pointer-events: none;
+}
+
+.hideYoKids {
+	visibility:hidden;
+}
+
+#statusText {
+	opacity: 0;
+	transition: opacity 5s;
+}
+
+#statusText.showMeTheWay {
+	opacity: 1;
+	transition: opacity 0s;
+}
+
+button {
+	z-index: 999;
 }
 
 </style>
@@ -111,22 +178,23 @@
 <body>
 
 <div>
-<span id="memCount">Memory Count: 0/40</span> | <span id="blockCount">Nodes Blocked: 0</span> | <span id="cantReachCount">Nodes Unreachable: 0</span> | <span id="efficiencyPath">Avg Path to Node: 0</span> | <button type="button" id="btnToggle">Toggle Reward Colors</button> | <button type="button" id="btnRotate">Rotate</button> | <button type="button" id="btnImport">Import</button> | <input type="text" name="#importText" value="stuff"><br>
+<span id="memCount">Memory Count: 0/40</span> | <span id="blockCount">Nodes Blocked: 0</span> | <span id="cantReachCount">Nodes Unreachable: 0</span> | <span id="efficiencyPath">Avg Path to Node: 0</span> | <button type="button" id="btnToggle">Toggle Reward Colors</button> | <button type="button" id="btnRotate">Rotate</button> | <button type="button" id="btnPlaceLight">Toggle Placelight</button> | <button type="button" id="btnImport">Import</button> | <input type="text" name="#importText" value="stuff"><br>
 		<div id="selectMeBruv">
 		<div class="square" id="P0" data="0"></div>
-		<div class="square" id="P1" data="1"><div class='left-corner'></div><div class='right-corner'></div></div>
-		<div class="square" id="P2" data="2"><div class='up-corner'></div><div class='down-corner2'></div></div>
-		<div class="square" id="P3" data="3"><div class='left-corner'></div><div class='down-corner'></div></div>
-		<div class="square" id="P4" data="4"><div class='right-corner'></div><div class='down-corner'></div></div>
-		<div class="square" id="P5" data="5"><div class='right-corner'></div><div class='up-corner'></div></div>
-		<div class="square" id="P6" data="6"><div class='left-corner'></div><div class='up-corner'></div></div>
-		<div class="square" id="P7" data="7"><div class='left-corner'></div><div class='right-corner'></div><div class='up-corner'></div></div>
-		<div class="square" id="P8" data="8"><div class='left-corner'></div><div class='up-corner'></div><div class='down-corner2'></div></div>
-		<div class="square" id="P9" data="9"><div class='left-corner'></div><div class='right-corner'></div><div class='down-corner'></div></div>
-		<div class="square" id="PA" data="A"><div class='right-corner'></div><div class='up-corner'></div><div class='down-corner2'></div></div>
-		<div class="square" id="PB" data="B"><div class='left-corner'></div><div class='right-corner'></div><div class='up-corner'></div><div class='down-corner2'></div></div>
+		<div class="square" id="P1" data="1"><div class='left-corner'></div><div class='right-corner'></div><div class='fillMeUp fillVar1'></div></div>
+		<div class="square" id="P2" data="2"><div class='up-corner'></div><div class='down-corner2'></div><div class='fillMeUp fillVar2'></div></div>
+		<div class="square" id="P3" data="3"><div class='left-corner'></div><div class='down-corner'></div><div class='fillMeUp fillVar3'></div></div>
+		<div class="square" id="P4" data="4"><div class='right-corner'></div><div class='down-corner'></div><div class='fillMeUp fillVar3'></div></div>
+		<div class="square" id="P5" data="5"><div class='right-corner'></div><div class='up-corner'></div><div class='fillMeUp'></div></div>
+		<div class="square" id="P6" data="6"><div class='left-corner'></div><div class='up-corner'></div><div class='fillMeUp'></div></div>
+		<div class="square" id="P7" data="7"><div class='left-corner'></div><div class='right-corner'></div><div class='up-corner'></div><div class='fillMeUp'></div></div>
+		<div class="square" id="P8" data="8"><div class='left-corner'></div><div class='up-corner'></div><div class='down-corner2'></div><div class='fillMeUp fillVar2'></div></div>
+		<div class="square" id="P9" data="9"><div class='left-corner'></div><div class='right-corner'></div><div class='down-corner'></div><div class='fillMeUp fillVar3'></div></div>
+		<div class="square" id="PA" data="A"><div class='right-corner'></div><div class='up-corner'></div><div class='down-corner2'></div><div class='fillMeUp fillVar2'></div></div>
+		<div class="square" id="PB" data="B"><div class='left-corner'></div><div class='right-corner'></div><div class='up-corner'></div><div class='down-corner2'></div><div class='fillMeUp fillVar2'></div></div>
 		</div>
 	<div style="clear:both;"></div>
+	<span id="statusText"></span>
 </br>
 
 <div id="grid">
