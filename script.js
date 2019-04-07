@@ -233,7 +233,7 @@ function checkRewards ( ) {
 			if( !holdGrid[i][j].isWall ) pathString += holdGrid[i][j].pathVal;
 			if( canRewardGoHere(i,j) ) holdGrid[i][j].canSpawnReward = true; else holdGrid[i][j].canSpawnReward = false;
 			if( !holdGrid[i][j].canSpawnReward && !holdGrid[i][j].isWall ) blockCount++;
-			if( !holdGrid[i][j].isEmpty && !holdGrid[i][j].isWall ) memoryCount++;
+			if( !holdGrid[i][j].isEmpty && !holdGrid[i][j].isWall && !holdGrid[i][j].isReward ) memoryCount++;
 			if( holdGrid[i][j].canSpawnReward ) availableRewardPlaces++;
 			if( holdGrid[i][j].isReward ) placedRewardCount++;
 
