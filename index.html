@@ -82,6 +82,10 @@
 	margin-left: 15px;
 }
 
+.fillMeUp.rewardBox {
+	background-color: #990000;
+}
+
 .fillVar1 {
 	margin-top: 15px;
 }
@@ -110,7 +114,7 @@
 }
 
 .canHoldReward {
-	background-color: #ffff99;
+	background-color: #66ff33;
 }
 
 .redText {
@@ -126,7 +130,8 @@
 }
 
 .square.lightMeUp.canHoldReward {
-	background-color: rgba(255, 255, 153, 0.5)
+	
+	background-color: #b3ff99;
 }
 
 .square.lightMeUp.cantReach {
@@ -167,6 +172,14 @@
 	transition: opacity 0s;
 }
 
+.hasMemoryAmplifier {
+	border-color: yellow;
+}
+
+.previewReward {
+	opacity: 0.3;
+}
+
 button {
 	z-index: 999;
 }
@@ -178,25 +191,34 @@ button {
 <body>
 
 <div>
-<span id="memCount">Memory Count: 0/40</span> | <span id="blockCount">Nodes Blocked: 0</span> | <span id="cantReachCount">Nodes Unreachable: 0</span> | <span id="efficiencyPath">Avg Path to Node: 0</span> | <button type="button" id="btnToggle">Toggle Reward Colors</button> | <button type="button" id="btnRotate">Rotate</button> | <button type="button" id="btnPlaceLight">Toggle Placelight</button> | <button type="button" id="btnImport">Import</button> | <input type="text" name="#importText" value="stuff"><br>
+<span id="memCount">Memory Count: 0/40</span> | <span id="blockCount">Nodes Blocked: 0</span> | <span id="placedRewardCount">Rewards Placed: 0</span> | <span id="availableRewardLocs">Available Reward Locations: 0</span> | <button type="button" id="btnToggle">Toggle Rewards</button> | <button type="button" id="btnRotate">Rotate</button> | <button type="button" id="btnPlaceLight">Toggle Placelight</button> | <button type="button" id="btnImport">Import</button> | <input type="text" name="#importText" value="stuff"><br>
 <a href="https://www.reddit.com/r/pathofexile/comments/b98na5">Discussion and info on leddit</a>
 		<div id="selectMeBruv">
-		<div class="square" id="P0" data="0"></div>
-		<div class="square" id="P1" data="1"><div class='left-corner'></div><div class='right-corner'></div><div class='fillMeUp fillVar1'></div></div>
-		<div class="square" id="P2" data="2"><div class='up-corner'></div><div class='down-corner2'></div><div class='fillMeUp fillVar2'></div></div>
-		<div class="square" id="P3" data="3"><div class='left-corner'></div><div class='down-corner'></div><div class='fillMeUp fillVar3'></div></div>
-		<div class="square" id="P4" data="4"><div class='right-corner'></div><div class='down-corner'></div><div class='fillMeUp fillVar3'></div></div>
-		<div class="square" id="P5" data="5"><div class='right-corner'></div><div class='up-corner'></div><div class='fillMeUp'></div></div>
-		<div class="square" id="P6" data="6"><div class='left-corner'></div><div class='up-corner'></div><div class='fillMeUp'></div></div>
-		<div class="square" id="P7" data="7"><div class='left-corner'></div><div class='right-corner'></div><div class='up-corner'></div><div class='fillMeUp'></div></div>
-		<div class="square" id="P8" data="8"><div class='left-corner'></div><div class='up-corner'></div><div class='down-corner2'></div><div class='fillMeUp fillVar2'></div></div>
-		<div class="square" id="P9" data="9"><div class='left-corner'></div><div class='right-corner'></div><div class='down-corner'></div><div class='fillMeUp fillVar3'></div></div>
-		<div class="square" id="PA" data="A"><div class='right-corner'></div><div class='up-corner'></div><div class='down-corner2'></div><div class='fillMeUp fillVar2'></div></div>
-		<div class="square" id="PB" data="B"><div class='left-corner'></div><div class='right-corner'></div><div class='up-corner'></div><div class='down-corner2'></div><div class='fillMeUp fillVar2'></div></div>
+		<div class="square" id="PA" data="A"></div>
+		<div class="square" id="PB" data="B"><div class='left-corner'></div><div class='right-corner'></div><div class='fillMeUp fillVar1'></div></div>
+		<div class="square" id="PC" data="C"><div class='up-corner'></div><div class='down-corner2'></div><div class='fillMeUp fillVar2'></div></div>
+		<div class="square" id="PD" data="D"><div class='left-corner'></div><div class='down-corner'></div><div class='fillMeUp fillVar3'></div></div>
+		<div class="square" id="PE" data="E"><div class='right-corner'></div><div class='down-corner'></div><div class='fillMeUp fillVar3'></div></div>
+		<div class="square" id="PF" data="F"><div class='right-corner'></div><div class='up-corner'></div><div class='fillMeUp'></div></div>
+		<div class="square" id="PG" data="G"><div class='left-corner'></div><div class='up-corner'></div><div class='fillMeUp'></div></div>
+		<div class="square" id="PH" data="H"><div class='left-corner'></div><div class='right-corner'></div><div class='up-corner'></div><div class='fillMeUp'></div></div>
+		<div class="square" id="PI" data="I"><div class='left-corner'></div><div class='up-corner'></div><div class='down-corner2'></div><div class='fillMeUp fillVar2'></div></div>
+		<div class="square" id="PJ" data="J"><div class='left-corner'></div><div class='right-corner'></div><div class='down-corner'></div><div class='fillMeUp fillVar3'></div></div>
+		<div class="square" id="PK" data="K"><div class='right-corner'></div><div class='up-corner'></div><div class='down-corner2'></div><div class='fillMeUp fillVar2'></div></div>
+		<div class="square" id="PL" data="L"><div class='left-corner'></div><div class='right-corner'></div><div class='up-corner'></div><div class='down-corner2'></div><div class='fillMeUp fillVar2'></div></div>
+		<div class="square hasMemoryAmplifier" id="Pa" data="a"></div>
+		<div class="square" id="PM" data="M"><div class='left-corner'></div><div class='fillMeUp rewardBox fillVar1'></div></div>
+		<div class="square" id="PN" data="N"><div class='down-corner'></div><div class='fillMeUp rewardBox fillVar3'></div></div>
+		<div class="square" id="PO" data="O"><div class='right-corner'></div><div class='fillMeUp rewardBox fillVar1'></div></div>
+		<div class="square" id="PP" data="P"><div class='up-corner'></div><div class='fillMeUp rewardBox'></div></div>
+		<div class="square hideYoKids" id="PQ" data="Q"><div class='left-corner'></div><div class='down-corner'></div><div class='fillMeUp rewardBox fillVar3'></div></div>
+		<div class="square hideYoKids" id="PR" data="R"><div class='right-corner'></div><div class='down-corner'></div><div class='fillMeUp rewardBox fillVar3'></div></div>
+		<div class="square hideYoKids" id="PS" data="S"><div class='right-corner'></div><div class='up-corner'></div><div class='fillMeUp rewardBox'></div></div>
+		<div class="square hideYoKids" id="PT" data="T"><div class='left-corner'></div><div class='up-corner'></div><div class='fillMeUp rewardBox'></div></div>
+		</div>
 		</div>
 	<div style="clear:both;"></div>
 </br>
-
 <div id="grid">
 	<div class="row" id="row-8">
 		<div class="squareInvis"></div><div class="squareInvis"></div><div class="squareInvis"></div><div class="squareInvis"></div><div class="squareInvis"></div><div class="squareInvis"></div><div class="squareInvis"></div><div class="squareInvis"></div><div class="squareInvis"></div><div class="squareInvis"></div><div class="squareInvis"></div><div class="squareInvis"></div><div class="squareInvis"></div><div class="squareInvis"></div><div class="squareInvis"></div><div class="squareInvis"></div><div class="squareInvis"></div>
