@@ -14,6 +14,7 @@ var stopHighlight = false;
 var toggleHighlight = 0;
 var tated = false;
 var assInAssumption = false;
+var clickDebug = false;
 const constNodes = 112;
 
 function toggleDebug() {
@@ -49,6 +50,7 @@ function addPaths ( obj, north, south, west, east ) {
 function toggleRewards ( ) {
 	let buff;
 	$(".canHoldReward").removeClass("canHoldReward");
+	$(".canHoldBoss").removeClass("canHoldBoss");
 	$(".cantReach").removeClass("cantReach");
 	$(".previewReward").removeClass("previewReward");
 	if( showRewards == 0 ) {
@@ -65,6 +67,7 @@ function toggleRewards ( ) {
 				$(value).addClass("canHoldReward")
 				if( holdGrid[x][y].isEmpty ) $(value).html("");
 			}
+			if( holdGrid[x][y].canSpawnBoss ) $(value).addClass("canHoldBoss");
 		} );
 	} else if( showRewards == 2) {
 		$.each( $("#grid > .row > .square"), function( key, value ) {
@@ -87,6 +90,7 @@ function toggleRewards ( ) {
 				if( ways=='SW' ) $(value).html( $("#PQ").html() );
 				if( ways=='SE' ) $(value).html( $("#PR").html() );
 			}
+			if( holdGrid[x][y].canSpawnBoss ) $(value).addClass("canHoldBoss");
 		} );
 	}
 
@@ -112,12 +116,12 @@ function hideWalls ( hideYoWife ) {
 	} );
 }
 
-var checkPaths = function( x, y ) {
+/*var checkPaths = function( x, y ) {
 	let averagePath = 0;
 	let possiblePaths = 0;
 	let buff;
 	
-	if( holdGrid[x][y-1].isEmpty ) {
+	if( !holdGrid[x][y-1].isEmpty & ) {
 		buff = findShortestPath( [x, y-1], holdGrid );
 		if( buff !== false ) { averagePath+=buff; possiblePaths++; }
 	}
@@ -136,27 +140,25 @@ var checkPaths = function( x, y ) {
 
 	if( possiblePaths == 0 ) return false;
 	return averagePath / possiblePaths;
-}
+}*/
 
 var canRewardGoHere = function ( x, y ) {
+	//resetting in which direction rewards can path
 	holdGrid[x][y].canN = false;
 	holdGrid[x][y].canW = false;
 	holdGrid[x][y].canS = false;
 	holdGrid[x][y].canE = false;
+	holdGrid[x][y].canSpawnBoss = false;
+
 	// 5. A reward node / memory amplifier can't spawn if distance from nexus is more than 7.
 	// 8. A reward node can't spawn on top of a placed memory or another reward node.
 	if( !holdGrid[x][y].isEmpty ) return false;
 	// 4. A reward node can't spawn on top of a memory amplifier.
 	if( holdGrid[x][y].isMemAmp ) return false;
+	
 	// 6. A reward node can't spawn directly adjacent to the nexus.
-	if( ( x==8 && ( y-1==8 || y+1==8 ) ) || ( y==8 && ( x-1==8 || x+1==8 ) ) ) return false;
-
-	// 7. A reward node can't spawn connected to a placed memory that's directly adjacent to the nexus.
-	if( !holdGrid[x-1][y].isEmpty && isNexusNeighbour(x-1, y) ) return false;
-	if( !holdGrid[x+1][y].isEmpty && isNexusNeighbour(x+1, y) ) return false;
-	if( !holdGrid[x][y-1].isEmpty && isNexusNeighbour(x, y-1) ) return false;
-	if( !holdGrid[x][y+1].isEmpty && isNexusNeighbour(x, y+1) ) return false;
-
+	// 7. A reward node can't spawn attached to a placed memory that has an unbroken connection to the nexus.
+	if( !stopHighlight && findShortestPath([x,y], holdGrid) ) return false;
 
 	// get paths pointing towards location and the direction its from
 	let paths = -1;
@@ -192,11 +194,15 @@ var canRewardGoHere = function ( x, y ) {
 	if( paths == 0 && directions[0]=='W' && holdGrid[x-1][y].isReward ) return false; //WEST
 
 	// ADD WAYS FOR RULE 1. A reward node in a quadrant can spawn facing only the adjacent quadrants, unless it connects to a placed memory.
+	// 10. A boss node can't spawn connected to any other node.
 	if( paths == -1 ) {
 		if( x<8 && holdGrid[x+1][y].isEmpty ) holdGrid[x][y].canE = true; //WEST
 		if( x>8 && holdGrid[x-1][y].isEmpty ) holdGrid[x][y].canW = true; //EAST
 		if( y<8 && holdGrid[x][y+1].isEmpty ) holdGrid[x][y].canS = true; //NORTH
 		if( y>8 && holdGrid[x][y-1].isEmpty ) holdGrid[x][y].canN = true; //SOUTH
+		
+		//11. A boss node can't spawn closer than 6 distance from nexus.
+		if( Math.abs(x-8) + Math.abs(y-8) > 5 ) holdGrid[x][y].canSpawnBoss = true;
 
 		return true;
 	}
@@ -230,6 +236,7 @@ function checkRewards ( ) {
 
 	for( let i = 1; i<=gridDepth*2; i++ )
 		for( let j = 1; j<=gridDepth*2; j++ ) {
+			holdGrid[i][j].canSpawnBoss = false;
 			if( !holdGrid[i][j].isWall ) pathString += holdGrid[i][j].pathVal;
 			if( canRewardGoHere(i,j) ) holdGrid[i][j].canSpawnReward = true; else holdGrid[i][j].canSpawnReward = false;
 			if( !holdGrid[i][j].canSpawnReward && !holdGrid[i][j].isWall ) blockCount++;
@@ -258,6 +265,7 @@ function checkRewards ( ) {
 	pathString += toggleHighlight;
 	pathString += 'z';
 
+	toggleRewards();
 	toggleRewards();
 
 	$("#memCount").removeClass("redText")
@@ -343,18 +351,17 @@ var toCode = function ( n ) {
 	return String.fromCharCode(n);
 }
 
-function addMemAmp ( ele ) {
-
-
-}
-
 function addWays ( ele, importingAmps ) {
 	let posX = ele.data("grid").x;
 	let posY = ele.data("grid").y;
 
+
+	// worst debug function
 	if( isDebug ) {
-		console.log(posX, posY, holdGrid[posX][posY]);
-		canRewardGoHere(posX, posY);
+		//click debug to be used throughout other code to reduce output spam
+		clickDebug = true;
+		console.log(posX, posY, holdGrid[posX][posY] );
+		clickDebug = false;
 		return;
 	}
 
@@ -504,6 +511,7 @@ function lowLight() {
 function fillGrid() {
 	let buff;
 	let canN, canS, canW, canE;
+
 	for( let i = -gridDepth; i<=gridDepth; i++ ) {
 		for( let j= -gridDepth; j<=gridDepth; j++ )
 			{
@@ -515,6 +523,7 @@ function fillGrid() {
 				holdGrid[i+gridDepth][j+gridDepth].isWall = true;
 				holdGrid[i+gridDepth][j+gridDepth].canSpawnReward = false;
 				holdGrid[i+gridDepth][j+gridDepth].canSpawnModifier = false;
+				holdGrid[i+gridDepth][j+gridDepth].canSpawnBoss = false;
 				holdGrid[i+gridDepth][j+gridDepth].hasBeen = false;
 				holdGrid[i+gridDepth][j+gridDepth].canReachReward = true;
 				buff.data("wall", true);
@@ -525,10 +534,6 @@ function fillGrid() {
 					holdGrid[i+gridDepth][j+gridDepth].isEmpty = true;
 					holdGrid[i+gridDepth][j+gridDepth].canSpawnReward = true;
 					holdGrid[i+gridDepth][j+gridDepth].canSpawnModifier = true;
-					if( $(".row").eq(j+gridDepth-1).find("div").eq(i+gridDepth).hasClass("square") ) canN = true;
-					if( $(".row").eq(j+gridDepth+1).find("div").eq(i+gridDepth).hasClass("square") ) canS = true;
-					if( $(".row").eq(j+gridDepth).find("div").eq(i+gridDepth-1).hasClass("square") ) canW = true;
-					if( $(".row").eq(j+gridDepth).find("div").eq(i+gridDepth+1).hasClass("square") ) canE = true;
 					buff.data("wall", false);
 					holdGrid[i+gridDepth][j+gridDepth].isWall = false;
 					buff.click(function() {
@@ -558,12 +563,13 @@ function allowSelection() {
 function importPath( path ) {
 	if( path.length < 112 ) return;
 	if( path.length == 115 ) path = convertOldImport( path );
+
 	let count = 0;
 	for( let i = 1; i<=gridDepth*2; i++ )
 		for( let j = 1; j<=gridDepth*2; j++ ) {
 			if( !holdGrid[i][j].isWall ) {
 				holdGrid[i][j].pathVal = path[count];
-				
+			
 				count++;
 			}
 		}
@@ -678,8 +684,8 @@ function importPath( path ) {
 	if( (path[113] == '1' && !tated) || (path[113] == '0' && tated) ) rotatePls();
 	toggleHighlight = path[114];
 
-	checkRewards();
 	stopHighlight = false;
+	checkRewards();
 	lowLight();
 }
 
@@ -729,7 +735,8 @@ function rotatePls () {
 
 $( document ).ready(function() {
 	holdGrid = createArray(17,17);
-    fillGrid();
+	fillGrid();
+
     allowSelection();
     $("#btnToggle").click(function() {
     	showRewards++;
@@ -838,6 +845,7 @@ var locationStatus = function(location, grid) {
   var gridSize = grid.length;
   var dfl = location.distanceFromLeft;
   var dft = location.distanceFromTop;
+  let buffDir = location.path[location.path.length-1];
 
   if (location.distanceFromTop < 0 ||
       location.distanceFromTop >= gridSize ||
@@ -848,7 +856,12 @@ var locationStatus = function(location, grid) {
     return 'Invalid';
   } else if (dfl == 8 && dft == 8) {
     return 'Goal';
-  } else if ( grid[dfl][dft].isEmpty !== true || grid[dfl][dft].hasBeen ) {
+  } else if ( grid[dfl][dft].isReward || grid[dfl][dft].isWall || grid[dfl][dft].isEmpty || grid[dfl][dft].hasBeen ||
+  	( !grid[dfl][dft].isEmpty && buffDir == 'North' && !grid[dfl][dft].hasS ) ||
+  	( !grid[dfl][dft].isEmpty && buffDir == 'South' && !grid[dfl][dft].hasN ) ||
+  	( !grid[dfl][dft].isEmpty && buffDir == 'West' && !grid[dfl][dft].hasE ) ||
+  	( !grid[dfl][dft].isEmpty && buffDir == 'East' && !grid[dfl][dft].hasW ) ) {
+
     // location is either an obstacle or has been visited
     return 'Blocked';
   } else {
