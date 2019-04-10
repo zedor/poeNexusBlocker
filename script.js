@@ -213,6 +213,7 @@ var canRewardGoHere = function ( x, y ) {
 		if( directions[i]=='W' ) holdGrid[x][y].canW = true;
 		if( directions[i]=='S' ) holdGrid[x][y].canS = true;
 		if( directions[i]=='E' ) holdGrid[x][y].canE = true;
+		if( Math.abs(x-8) + Math.abs(y-8) > 5 ) holdGrid[x][y].canSpawnBoss = true;
 	}
 
 	return true;
